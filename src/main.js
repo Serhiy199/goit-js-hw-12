@@ -28,13 +28,21 @@ function errorMessage(error) {
     });
 }
 
+function classListRemove(element) {
+    element.classList.remove('visibility');
+}
+
+function classListAdd(element) {
+    element.classList.add('visibility');
+}
+
 const getImage = async params => {
     try {
         const response = await instance.get('', { params });
 
         return response.data;
     } catch (error) {
-        span.classList.add('visibility');
+        classListAdd(span);
 
         errorMessage(error);
     }
@@ -51,15 +59,14 @@ const createGetImage = q => {
 
             const { hits, totalHits } = await getImage({ page, q });
 
-            loadMoreBtn.classList.remove('visibility');
+            classListRemove(loadMoreBtn);
 
             if (
                 page >= Math.ceil(totalHits / perPage) &&
                 Math.ceil(totalHits / perPage) !== 0
             ) {
                 isLastPage = true;
-
-                loadMoreBtn.classList.add('visibility');
+                classListAdd(loadMoreBtn);
 
                 iziToast.info({
                     message:
@@ -72,8 +79,8 @@ const createGetImage = q => {
 
             return hits;
         } catch (error) {
-            span.classList.add('visibility');
-            loadMoreBtn.classList.add('visibility');
+            classListAdd(span);
+            classListAdd(loadMoreBtn);
 
             errorMessage(error);
         }
@@ -100,8 +107,8 @@ formSearch.addEventListener('submit', async event => {
     listGallery.innerHTML = '';
 
     doFetch = async () => {
-        loadMoreBtn.classList.add('visibility');
-        span.classList.remove('visibility');
+        classListAdd(loadMoreBtn);
+        classListRemove(span);
 
         const hits = await formMarkupCreating(fetchImage());
 
@@ -112,7 +119,6 @@ formSearch.addEventListener('submit', async event => {
 
                 const galleryItemHeight =
                     firstGalleryItem.getBoundingClientRect().height;
-                console.log(galleryItemHeight);
 
                 window.scrollBy({
                     top: galleryItemHeight * 2,
@@ -124,7 +130,7 @@ formSearch.addEventListener('submit', async event => {
 
         clickOnLoad = true;
 
-        span.classList.add('visibility');
+        classListAdd(span);
 
         return clickOnLoad;
     };
@@ -137,7 +143,7 @@ formSearch.addEventListener('submit', async event => {
 async function formMarkupCreating(result) {
     try {
         const dataFormImage = await result;
-        span.classList.remove('visibility');
+        classListRemove(span);
 
         if (!dataFormImage.length) {
             iziToast.error({
@@ -145,8 +151,9 @@ async function formMarkupCreating(result) {
                 icon: '',
                 position: 'topRight',
             });
-            span.classList.add('visibility');
-            loadMoreBtn.classList.add('visibility');
+
+            classListAdd(span);
+            classListAdd(loadMoreBtn);
             return;
         }
         const gallery = new SimpleLightbox('.gallery a', {
@@ -161,8 +168,9 @@ async function formMarkupCreating(result) {
 
         gallery.refresh();
     } catch (error) {
-        span.classList.add('visibility');
-        loadMoreBtn.classList.add('visibility');
+        classListAdd(span);
+        classListAdd(loadMoreBtn);
+
         errorMessage(error);
     }
 }
